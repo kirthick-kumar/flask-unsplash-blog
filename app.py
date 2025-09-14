@@ -64,17 +64,15 @@ def create_post():
     db.session.add(post)
     db.session.commit()
 
-    return jsonify({"message": "Post created", "post": {
-        "id": post.id, "title": post.title, "content": post.content, "image_url": post.image_url
-    }}), 201
+    return jsonify(post.to_dict()), 201
 
 
 @app.route('/posts/<int:post_id>', methods=['PUT'])
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
     data = request.get_json()
-    post.image_url = fetch_image_for_post(post.title)
     post.title = data.get('title', post.title)
+    post.image_url = fetch_image_for_post(post.title)
     post.content = data.get('content', post.content)
     db.session.commit()
     return jsonify(post.to_dict())
